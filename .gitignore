@@ -34,12 +34,18 @@ Thumbs.db
 # Logs
 logs
 *.log
+backend.log
+frontend.log
 
 # Runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
+
+# Process ID files
+.backend.pid
+.frontend.pid
 
 # Coverage directory used by tools like istanbul
 coverage/
@@ -71,3 +77,34 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Database files (if added later)
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker files (if added later)
+.dockerignore
+docker-compose.override.yml
+
+# Test coverage
+coverage/
+*.lcov
+
+# Build artifacts
+dist/
+build/
+
+# Development cache
+.cache/
+.parcel-cache/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
