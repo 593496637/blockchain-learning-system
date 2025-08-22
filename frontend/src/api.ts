@@ -174,7 +174,7 @@ export const blockchainApi = {
   /**
    * 获取所有区块
    */
-  async getAllBlocks(): Promise<Block[]> {
+  async getBlockchain(): Promise<Block[]> {
     const response = await api.get<ApiResponse<Block[]>>('/blockchain/blocks');
     if (!response.data.success) {
       throw new Error(response.data.error || '获取区块失败');
@@ -194,6 +194,27 @@ export const blockchainApi = {
   },
 
   /**
+   * 获取用户列表
+   */
+  async getUsers(): Promise<User[]> {
+    return userApi.getAllUsers();
+  },
+
+  /**
+   * 获取矿工列表
+   */
+  async getMiners(): Promise<Miner[]> {
+    return minerApi.getAllMiners();
+  },
+
+  /**
+   * 获取交易池
+   */
+  async getTransactionPool(): Promise<Transaction[]> {
+    return transactionApi.getPendingTransactions();
+  },
+
+  /**
    * 健康检查
    */
   async healthCheck(): Promise<string> {
@@ -205,4 +226,6 @@ export const blockchainApi = {
   },
 };
 
+// 为了兼容现有组件，导出统一的blockchainApi
+export { blockchainApi };
 export default api;
