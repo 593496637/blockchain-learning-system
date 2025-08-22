@@ -9,168 +9,13 @@ import { ThemeProvider } from './components/ThemeProvider';
 import BlockchainBrowser from './components/BlockchainBrowser';
 import TransactionManagement from './components/TransactionManagement';
 import MinerManagement from './components/MinerManagement';
+import UserManagement from './components/UserManagement';
 import Sidebar from './components/Sidebar';
 
 // 导入背景效果和图标
 import { ParticleBackground, BlockchainGrid, GradientOrb, NodeNetwork } from './components/BackgroundEffects';
 import { RefreshIcon, ConnectedIcon } from './components/Icons';
 import EnhancedSystemStatus from './components/EnhancedSystemStatus';
-
-
-
-// 用户管理组件
-const UserManagement: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [newUserName, setNewUserName] = useState('');
-  const [selectedUser, setSelectedUser] = useState<string>('');
-  const [allocateAmount, setAllocateAmount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-
-  const loadUsers = async () => {
-    try {
-      const response = await api.getUsers();
-      if (response.success && response.data) {
-        setUsers(response.data);
-      }
-    } catch (error) {
-      console.error('Failed to load users:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const createUser = async () => {
-    if (!newUserName.trim()) {
-      setMessage('请输入用户名');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const response = await api.createUser(newUserName.trim());
-      if (response.success) {
-        setMessage(`用户 ${newUserName} 创建成功！`);
-        setNewUserName('');
-        await loadUsers();
-        onRefresh();
-      } else {
-        setMessage(`创建失败: ${response.error}`);
-      }
-    } catch (error) {
-      console.error('Failed to create user:', error);
-      setMessage('创建用户时发生错误');
-    }
-    setLoading(false);
-  };
-
-  const allocateTokens = async () => {
-    if (!selectedUser || allocateAmount <= 0) {
-      setMessage('请选择用户并输入有效金额');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const response = await api.allocateTokens(selectedUser, allocateAmount);
-      if (response.success) {
-        setMessage(`成功分配 ${allocateAmount} 代币！`);
-        setAllocateAmount(0);
-        await loadUsers();
-        onRefresh();
-      } else {
-        setMessage(`分配失败: ${response.error}`);
-      }
-    } catch (error) {
-      console.error('Failed to allocate tokens:', error);
-      setMessage('分配代币时发生错误');
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="management-panel">
-      <h2>用户管理</h2>
-      
-      <div className="action-section">
-        <h3>创建新用户</h3>
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="用户名"
-            value={newUserName}
-            onChange={(e) => setNewUserName(e.target.value)}
-            disabled={loading}
-            onKeyPress={(e) => e.key === 'Enter' && createUser()}
-          />
-          <button onClick={createUser} disabled={loading || !newUserName.trim()}>
-            {loading ? '创建中...' : '创建用户'}
-          </button>
-        </div>
-      </div>
-
-      <div className="action-section">
-        <h3>分配代币</h3>
-        <div className="input-group">
-          <select
-            value={selectedUser}
-            onChange={(e) => setSelectedUser(e.target.value)}
-            disabled={loading}
-          >
-            <option value="">选择用户</option>
-            {users.map(user => (
-              <option key={user.address} value={user.address}>
-                {user.name} - {user.address.substring(0, 10)}...
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            placeholder="代币数量"
-            value={allocateAmount || ''}
-            onChange={(e) => setAllocateAmount(Number(e.target.value))}
-            disabled={loading}
-            min="1"
-          />
-          <button onClick={allocateTokens} disabled={loading || !selectedUser || allocateAmount <= 0}>
-            {loading ? '分配中...' : '分配代币'}
-          </button>
-        </div>
-      </div>
-
-      <div className="list-section">
-        <h3>用户列表 ({users.length})</h3>
-        <button onClick={loadUsers} className="refresh-btn">刷新</button>
-        <div className="user-list">
-          {users.length === 0 ? (
-            <div className="empty-state">暂无用户，请先创建用户</div>
-          ) : (
-            users.map(user => (
-              <div key={user.address} className="user-item">
-                <div className="user-info">
-                  <strong>{user.name || '匿名用户'}</strong>
-                  <div className="user-details">
-                    <span>地址: {user.address}</span>
-                    <span>余额: {user.balance} 代币</span>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {message && (
-        <div className="message">
-          {message}
-          <button onClick={() => setMessage('')}>×</button>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // 主应用组件
 function App() {
@@ -214,8 +59,6 @@ function App() {
   const handleRefresh = () => {
     loadSystemInfo();
   };
-
-
 
   if (loading) {
     return (
