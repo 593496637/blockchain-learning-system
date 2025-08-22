@@ -32,6 +32,7 @@ body {
 .loading-spinner {
   font-size: 3em;
   animation: spin 2s linear infinite;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
@@ -312,6 +313,21 @@ body {
 
 .refresh-btn:hover {
   background: #059669;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+  font-size: 1.1em;
 }
 
 /* 用户列表样式 */
@@ -702,5 +718,10 @@ body {
   
   .app-header h1 {
     font-size: 1.4em;
+  }
+  
+  .input-group input,
+  .input-group select {
+    min-width: 150px;
   }
 }
