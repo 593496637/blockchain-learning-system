@@ -29,7 +29,30 @@
 
 ## 📋 常见问题解决
 
-### ❌ 问题1: "端口被占用"
+### ❌ 问题1: "webpack dev server allowedHosts 配置错误"
+
+**错误信息**：
+```
+Invalid options object. Dev Server has been initialized using an options object that does not match the API schema.
+- options.allowedHosts[0] should be a non-empty string.
+```
+
+**解决方法**：
+```bash
+# 在 frontend/.env 文件中添加以下配置（已自动修复）：
+DANGEROUSLY_DISABLE_HOST_CHECK=true
+SKIP_PREFLIGHT_CHECK=true
+HOST=localhost
+PORT=3000
+
+# 如果问题仍然存在，尝试：
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+npm start
+```
+
+### ❌ 问题2: "端口被占用"
 
 **错误信息**：
 ```
@@ -52,7 +75,7 @@ PORT=3002 npm start  # 前端
 PORT=3003 npm start  # 后端
 ```
 
-### ❌ 问题2: "依赖安装失败"
+### ❌ 问题3: "依赖安装失败"
 
 **错误信息**：
 ```
@@ -74,7 +97,7 @@ npm install -g yarn
 yarn install
 ```
 
-### ❌ 问题3: "TypeScript编译错误"
+### ❌ 问题4: "TypeScript编译错误"
 
 **错误信息**：
 ```
@@ -95,7 +118,7 @@ npm install @types/react @types/react-dom
 npm start
 ```
 
-### ❌ 问题4: "API连接失败"
+### ❌ 问题5: "API连接失败"
 
 **错误信息**：
 ```
@@ -115,7 +138,7 @@ Cannot connect to server
    }));
    ```
 
-### ❌ 问题5: "React组件报错"
+### ❌ 问题6: "React组件报错"
 
 **错误信息**：
 ```
@@ -131,7 +154,7 @@ Module not found: Can't resolve './components/...'
    npm start
    ```
 
-### ❌ 问题6: "浏览器白屏"
+### ❌ 问题7: "浏览器白屏"
 
 **可能原因**：
 - 前端编译错误
