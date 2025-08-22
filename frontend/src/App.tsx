@@ -1,7 +1,7 @@
 // frontend/src/App.tsx
 
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, message, Spin, Card } from 'antd';
+import { Layout, Menu, message, Spin } from 'antd';
 import {
   UserOutlined,
   SendOutlined,
@@ -9,9 +9,16 @@ import {
   DollarOutlined,
   ToolOutlined,
   InfoCircleOutlined,
+  HomeOutlined,
 } from '@ant-design/icons';
 
 import { blockchainApi } from './api';
+import UserManagement from './components/UserManagement';
+import TokenManagement from './components/TokenManagement';
+import TransactionManagement from './components/TransactionManagement';
+import MinerManagement from './components/MinerManagement';
+import BlockExplorer from './components/BlockExplorer';
+import SystemInfo from './components/SystemInfo';
 import './App.css';
 
 const { Header, Content, Sider } = Layout;
@@ -64,65 +71,59 @@ const App: React.FC = () => {
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16, marginTop: 32 }}>
-        <Card 
-          title="👥 用户管理" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('users')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">👥</div>
+          <h3>用户管理</h3>
           <p>创建用户账户、生成钱包地址、查看余额和交易历史</p>
-        </Card>
+        </div>
         
-        <Card 
-          title="💰 代币管理" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('tokens')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">💰</div>
+          <h3>代币管理</h3>
           <p>手动分配代币给用户，查看代币分布统计信息</p>
-        </Card>
+        </div>
         
-        <Card 
-          title="💸 交易管理" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('transactions')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">💸</div>
+          <h3>交易管理</h3>
           <p>创建转账交易、查看交易池、了解手续费机制</p>
-        </Card>
+        </div>
         
-        <Card 
-          title="⛏️ 矿工管理" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('miners')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">⛏️</div>
+          <h3>矿工管理</h3>
           <p>注册矿工、执行挖矿操作、获得区块奖励</p>
-        </Card>
+        </div>
         
-        <Card 
-          title="🔍 区块浏览器" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('explorer')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">🔍</div>
+          <h3>区块浏览器</h3>
           <p>浏览完整区块链、查看区块详情、搜索交易</p>
-        </Card>
+        </div>
         
-        <Card 
-          title="📊 系统信息" 
-          bordered={false}
-          hoverable
+        <div 
+          className="welcome-card"
           onClick={() => setSelectedKey('system')}
-          style={{ cursor: 'pointer' }}
         >
+          <div className="welcome-card-icon">📊</div>
+          <h3>系统信息</h3>
           <p>查看系统状态、网络活跃度、配置参数</p>
-        </Card>
+        </div>
       </div>
 
       <div style={{ marginTop: 40, padding: 20, background: '#f6f8fa', borderRadius: 8 }}>
@@ -134,28 +135,20 @@ const App: React.FC = () => {
           <li>在"交易管理"中创建转账交易</li>
           <li>让矿工执行挖矿操作打包交易</li>
           <li>在"区块浏览器"中查看区块链状态</li>
+          <li>在"系统信息"中监控整体运行状态</li>
         </ol>
       </div>
-    </div>
-  );
 
-  /**
-   * 渲染占位页面（用于展示功能模块）
-   */
-  const renderPlaceholderPage = (title: string, description: string, icon: string) => (
-    <div style={{ textAlign: 'center', padding: 60 }}>
-      <div style={{ fontSize: 72, marginBottom: 24 }}>{icon}</div>
-      <h2 style={{ marginBottom: 16 }}>{title}</h2>
-      <p style={{ fontSize: 16, color: '#666', marginBottom: 32 }}>
-        {description}
-      </p>
-      <p style={{ color: '#999' }}>
-        💡 此功能正在开发中。完整的React组件将包含丰富的交互功能。
-      </p>
-      <div style={{ marginTop: 24, padding: 16, background: '#f0f0f0', borderRadius: 8 }}>
-        <p style={{ margin: 0, fontSize: 14, color: '#666' }}>
-          要体验完整功能，请将所有artifacts中的组件代码复制到 frontend/src/components/ 目录下
-        </p>
+      <div style={{ marginTop: 24, padding: 16, background: '#e6f7ff', borderRadius: 8, border: '1px solid #91d5ff' }}>
+        <h4 style={{ margin: '0 0 8px 0', color: '#1890ff' }}>✨ 系统特色</h4>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, fontSize: 14 }}>
+          <div>🔐 模拟真实区块链环境</div>
+          <div>⚡ 实时数据更新</div>
+          <div>🎨 现代化用户界面</div>
+          <div>📚 丰富的学习内容</div>
+          <div>🛠️ 完整的开发工具链</div>
+          <div>📊 详细的统计分析</div>
+        </div>
       </div>
     </div>
   );
@@ -168,41 +161,17 @@ const App: React.FC = () => {
       case 'welcome':
         return renderWelcomePage();
       case 'users':
-        return renderPlaceholderPage(
-          '用户管理',
-          '创建用户账户、生成钱包地址、查看余额和交易历史',
-          '👥'
-        );
+        return <UserManagement />;
       case 'tokens':
-        return renderPlaceholderPage(
-          '代币管理',
-          '手动分配代币给用户，查看代币分布统计',
-          '💰'
-        );
+        return <TokenManagement />;
       case 'transactions':
-        return renderPlaceholderPage(
-          '交易管理',
-          '创建转账交易、查看交易池状态',
-          '💸'
-        );
+        return <TransactionManagement />;
       case 'miners':
-        return renderPlaceholderPage(
-          '矿工管理',
-          '注册矿工、执行挖矿操作、获得奖励',
-          '⛏️'
-        );
+        return <MinerManagement />;
       case 'explorer':
-        return renderPlaceholderPage(
-          '区块浏览器',
-          '浏览区块链、查看区块和交易详情',
-          '🔍'
-        );
+        return <BlockExplorer />;
       case 'system':
-        return renderPlaceholderPage(
-          '系统信息',
-          '查看系统状态、网络活跃度、配置信息',
-          '📊'
-        );
+        return <SystemInfo />;
       default:
         return renderWelcomePage();
     }
@@ -214,7 +183,7 @@ const App: React.FC = () => {
   const menuItems = [
     {
       key: 'welcome',
-      icon: <InfoCircleOutlined />,
+      icon: <HomeOutlined />,
       label: '欢迎页面',
     },
     {
@@ -264,6 +233,9 @@ const App: React.FC = () => {
         <Spin size="large" />
         <div style={{ marginTop: 16, fontSize: 16 }}>
           正在连接区块链系统...
+        </div>
+        <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+          请确保后端服务已启动 (http://localhost:3001)
         </div>
       </div>
     );
