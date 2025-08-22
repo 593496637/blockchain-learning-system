@@ -7,7 +7,7 @@
 - 🎯 **完整的学习体验** - 涵盖区块链核心概念的全流程操作
 - 🎨 **现代化界面** - 基于 React + Ant Design 的精美UI
 - ⚡ **实时数据更新** - 动态展示区块链状态变化
-- 🔧 **一键部署** - 提供自动化部署脚本
+- 🔧 **简单易用** - 提供详细的启动指南和故障排除
 - 📚 **丰富的教育内容** - 每个功能都包含详细说明
 - 🛡️ **安全可靠** - 模拟真实区块链环境
 
@@ -36,37 +36,21 @@
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🚀 快速开始
+## 🚀 快速启动
 
-### 方法一：一键部署（推荐）
-
-```bash
-# 1. 克隆项目
-git clone https://github.com/593496637/blockchain-learning-system.git
-cd blockchain-learning-system
-
-# 2. 给脚本执行权限
-chmod +x deploy.sh stop.sh
-
-# 3. 一键部署并启动
-./deploy.sh
-```
-
-部署脚本会自动：
-- ✅ 检查系统环境
-- ✅ 安装前后端依赖
-- ✅ 构建后端代码
-- ✅ 启动后端服务 (http://localhost:3001)
-- ✅ 启动前端服务 (http://localhost:3000)
-- ✅ 自动打开浏览器
-
-### 方法二：手动启动
-
-#### 环境要求
+### 环境要求
 - Node.js 16+
 - npm 或 yarn
 
-#### 启动后端
+### 🔧 简单启动方法
+
+**步骤1: 克隆项目**
+```bash
+git clone https://github.com/593496637/blockchain-learning-system.git
+cd blockchain-learning-system
+```
+
+**步骤2: 启动后端** (终端1)
 ```bash
 cd backend
 npm install
@@ -74,19 +58,47 @@ npm run build
 npm start
 ```
 
-#### 启动前端
+**步骤3: 启动前端** (终端2)
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-### 停止服务
+**步骤4: 访问系统**
+- 前端: http://localhost:3000
+- 后端: http://localhost:3001
 
-```bash
-# 停止所有服务
-./stop.sh
+### 📋 验证启动成功
+
+当看到以下输出时表示启动成功：
+
+**后端输出：**
 ```
+🚀 区块链学习系统启动成功！
+📡 后端服务运行在: http://localhost:3001
+✅ 测试数据创建完成！
+```
+
+**前端输出：**
+```
+webpack compiled successfully
+Local: http://localhost:3000
+```
+
+## 🛠️ 遇到问题？
+
+如果启动遇到问题，请查看详细的故障排除指南：
+
+📖 **[故障排除指南 (TROUBLESHOOTING.md)](./TROUBLESHOOTING.md)**
+
+包含以下常见问题的解决方案：
+- 端口被占用
+- 依赖安装失败
+- API连接错误
+- 编译错误
+- 浏览器白屏
+- 完全重置方法
 
 ## 📋 完整使用流程
 
@@ -167,10 +179,11 @@ blockchain-learning-system/
 │   │   ├── App.tsx        # 主应用组件
 │   │   └── App.css        # 样式文件
 │   └── package.json
-├── deploy.sh              # 一键部署脚本
-├── stop.sh                # 停止服务脚本
+├── deploy.sh              # 自动部署脚本
 ├── start.sh               # 启动脚本
+├── stop.sh                # 停止服务脚本
 ├── README.md              # 项目说明
+├── TROUBLESHOOTING.md     # 故障排除指南
 ├── INSTALL.md             # 安装指南
 ├── COMPONENTS.md          # 组件说明
 └── LICENSE                # 开源协议
@@ -229,12 +242,12 @@ npm run build
 - `GET /api/health` - 健康检查
 - `GET /api/users` - 获取用户列表
 - `POST /api/users` - 创建新用户
-- `GET /api/blockchain` - 获取区块链
-- `GET /api/transactions` - 获取交易池
+- `GET /api/blockchain/blocks` - 获取区块链
+- `GET /api/transactions/pending` - 获取交易池
 - `POST /api/transactions` - 创建交易
 - `GET /api/miners` - 获取矿工列表
 - `POST /api/miners` - 注册矿工
-- `POST /api/mine` - 执行挖矿
+- `POST /api/mining/mine` - 执行挖矿
 
 ## 🌈 扩展建议
 
@@ -277,8 +290,8 @@ npm run build
 
 遇到问题？
 
-1. 检查 [Issues](https://github.com/593496637/blockchain-learning-system/issues) 页面
-2. 查看日志文件：`backend.log` 和 `frontend.log`
+1. 首先查看 [故障排除指南](./TROUBLESHOOTING.md)
+2. 搜索 [Issues](https://github.com/593496637/blockchain-learning-system/issues) 页面
 3. 创建新的 Issue 描述问题
 
 ## 📄 开源协议
