@@ -1,1 +1,323 @@
-import React, { useState, useEffect } from 'react';\nimport './App.css';\nimport { api } from './api';\nimport { User, BlockchainInfo } from './types';\n\n// 系统状态组件\nconst SystemStatus: React.FC<{ info: BlockchainInfo | null }> = ({ info }) => {\n  if (!info) {\n    return (\n      <div className=\"status-panel\">\n        <h2>🔗 区块链系统状态</h2>\n        <div className=\"loading\">加载中...</div>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"status-panel\">\n      <h2>🔗 区块链系统状态</h2>\n      <div className=\"status-grid\">\n        <div className=\"status-item\">\n          <span className=\"label\">区块高度:</span>\n          <span className=\"value\">{info.blockHeight}</span>\n        </div>\n        <div className=\"status-item\">\n          <span className=\"label\">待处理交易:</span>\n          <span className=\"value\">{info.pendingTransactionCount}</span>\n        </div>\n        <div className=\"status-item\">\n          <span className=\"label\">用户总数:</span>\n          <span className=\"value\">{info.totalUsers}</span>\n        </div>\n        <div className=\"status-item\">\n          <span className=\"label\">矿工总数:</span>\n          <span className=\"value\">{info.totalMiners}</span>\n        </div>\n        <div className=\"status-item\">\n          <span className=\"label\">挖矿奖励:</span>\n          <span className=\"value\">{info.config.blockReward} 代币</span>\n        </div>\n        <div className=\"status-item\">\n          <span className=\"label\">挖矿难度:</span>\n          <span className=\"value\">{info.config.difficulty}</span>\n        </div>\n      </div>\n    </div>\n  );\n};\n\n// 用户管理组件\nconst UserManagement: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {\n  const [users, setUsers] = useState<User[]>([]);\n  const [newUserName, setNewUserName] = useState('');\n  const [selectedUser, setSelectedUser] = useState<string>('');\n  const [allocateAmount, setAllocateAmount] = useState<number>(0);\n  const [loading, setLoading] = useState(false);\n  const [message, setMessage] = useState('');\n\n  const loadUsers = async () => {\n    try {\n      const response = await api.getUsers();\n      if (response.success && response.data) {\n        setUsers(response.data);\n      }\n    } catch (error) {\n      console.error('Failed to load users:', error);\n    }\n  };\n\n  useEffect(() => {\n    loadUsers();\n  }, []);\n\n  const createUser = async () => {\n    if (!newUserName.trim()) {\n      setMessage('请输入用户名');\n      return;\n    }\n    \n    setLoading(true);\n    try {\n      const response = await api.createUser(newUserName.trim());\n      if (response.success) {\n        setMessage(`用户 ${newUserName} 创建成功！`);\n        setNewUserName('');\n        await loadUsers();\n        onRefresh();\n      } else {\n        setMessage(`创建失败: ${response.error}`);\n      }\n    } catch (error) {\n      setMessage('创建用户时发生错误');\n    }\n    setLoading(false);\n  };\n\n  const allocateTokens = async () => {\n    if (!selectedUser || allocateAmount <= 0) {\n      setMessage('请选择用户并输入有效金额');\n      return;\n    }\n    \n    setLoading(true);\n    try {\n      const response = await api.allocateTokens(selectedUser, allocateAmount);\n      if (response.success) {\n        setMessage(`成功分配 ${allocateAmount} 代币！`);\n        setAllocateAmount(0);\n        await loadUsers();\n        onRefresh();\n      } else {\n        setMessage(`分配失败: ${response.error}`);\n      }\n    } catch (error) {\n      setMessage('分配代币时发生错误');\n    }\n    setLoading(false);\n  };\n\n  return (\n    <div className=\"management-panel\">\n      <h2>👥 用户管理</h2>\n      \n      <div className=\"action-section\">\n        <h3>创建新用户</h3>\n        <div className=\"input-group\">\n          <input\n            type=\"text\"\n            placeholder=\"用户名\"\n            value={newUserName}\n            onChange={(e) => setNewUserName(e.target.value)}\n            disabled={loading}\n            onKeyPress={(e) => e.key === 'Enter' && createUser()}\n          />\n          <button onClick={createUser} disabled={loading || !newUserName.trim()}>\n            {loading ? '创建中...' : '创建用户'}\n          </button>\n        </div>\n      </div>\n\n      <div className=\"action-section\">\n        <h3>分配代币</h3>\n        <div className=\"input-group\">\n          <select\n            value={selectedUser}\n            onChange={(e) => setSelectedUser(e.target.value)}\n            disabled={loading}\n          >\n            <option value=\"\">选择用户</option>\n            {users.map(user => (\n              <option key={user.address} value={user.address}>\n                {user.name} - {user.address.substring(0, 10)}...\n              </option>\n            ))}\n          </select>\n          <input\n            type=\"number\"\n            placeholder=\"代币数量\"\n            value={allocateAmount || ''}\n            onChange={(e) => setAllocateAmount(Number(e.target.value))}\n            disabled={loading}\n            min=\"1\"\n          />\n          <button onClick={allocateTokens} disabled={loading || !selectedUser || allocateAmount <= 0}>\n            {loading ? '分配中...' : '分配代币'}\n          </button>\n        </div>\n      </div>\n\n      <div className=\"list-section\">\n        <h3>用户列表 ({users.length})</h3>\n        <button onClick={loadUsers} className=\"refresh-btn\">刷新</button>\n        <div className=\"user-list\">\n          {users.length === 0 ? (\n            <div className=\"empty-state\">暂无用户，请先创建用户</div>\n          ) : (\n            users.map(user => (\n              <div key={user.address} className=\"user-item\">\n                <div className=\"user-info\">\n                  <strong>{user.name || '匿名用户'}</strong>\n                  <div className=\"user-details\">\n                    <span>地址: {user.address}</span>\n                    <span>余额: {user.balance} 代币</span>\n                  </div>\n                </div>\n              </div>\n            ))\n          )}\n        </div>\n      </div>\n\n      {message && (\n        <div className=\"message\">\n          {message}\n          <button onClick={() => setMessage('')}>×</button>\n        </div>\n      )}\n    </div>\n  );\n};\n\n// 主应用组件\nfunction App() {\n  const [activeTab, setActiveTab] = useState('status');\n  const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo | null>(null);\n  const [loading, setLoading] = useState(true);\n  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');\n\n  const loadSystemInfo = async () => {\n    try {\n      setConnectionStatus('connecting');\n      const infoResponse = await api.getBlockchainInfo();\n      \n      if (infoResponse.success && infoResponse.data) {\n        setBlockchainInfo(infoResponse.data);\n      }\n      \n      setConnectionStatus('connected');\n    } catch (error) {\n      console.error('Failed to load system info:', error);\n      setConnectionStatus('disconnected');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  useEffect(() => {\n    loadSystemInfo();\n    const interval = setInterval(loadSystemInfo, 10000);\n    return () => clearInterval(interval);\n  }, []);\n\n  const handleRefresh = () => {\n    loadSystemInfo();\n  };\n\n  const tabs = [\n    { id: 'status', label: '系统状态', icon: '📊' },\n    { id: 'users', label: '用户管理', icon: '👥' }\n  ];\n\n  if (loading) {\n    return (\n      <div className=\"app loading\">\n        <div className=\"loading-spinner\">⚡</div>\n        <p>连接区块链系统中...</p>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"app\">\n      <header className=\"app-header\">\n        <h1>🚀 区块链学习系统</h1>\n        <div className=\"header-actions\">\n          <div className={`connection-status ${connectionStatus}`}>\n            <span className=\"status-indicator\"></span>\n            {connectionStatus === 'connected' && '已连接'}\n            {connectionStatus === 'connecting' && '连接中...'}\n            {connectionStatus === 'disconnected' && '连接失败'}\n          </div>\n          <button onClick={handleRefresh} className=\"refresh-button\">\n            🔄 刷新\n          </button>\n        </div>\n      </header>\n\n      <nav className=\"app-nav\">\n        {tabs.map(tab => (\n          <button\n            key={tab.id}\n            className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}\n            onClick={() => setActiveTab(tab.id)}\n          >\n            <span className=\"tab-icon\">{tab.icon}</span>\n            <span className=\"tab-label\">{tab.label}</span>\n          </button>\n        ))}\n      </nav>\n\n      <main className=\"app-main\">\n        {activeTab === 'status' && (\n          <SystemStatus info={blockchainInfo} />\n        )}\n        {activeTab === 'users' && (\n          <UserManagement onRefresh={handleRefresh} />\n        )}\n      </main>\n\n      <footer className=\"app-footer\">\n        <p>🎓 区块链学习系统 - 理解区块链的最佳实践平台</p>\n      </footer>\n    </div>\n  );\n}\n\nexport default App;"
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import { api } from './api';
+import type { User, BlockchainInfo } from './types';
+
+// 导入功能组件
+import BlockchainBrowser from './components/BlockchainBrowser';
+import TransactionManagement from './components/TransactionManagement';
+import MinerManagement from './components/MinerManagement';
+
+// 系统状态组件
+const SystemStatus: React.FC<{ info: BlockchainInfo | null }> = ({ info }) => {
+  if (!info) {
+    return (
+      <div className="status-panel">
+        <h2>🔗 区块链系统状态</h2>
+        <div className="loading">加载中...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="status-panel">
+      <h2>🔗 区块链系统状态</h2>
+      <div className="status-grid">
+        <div className="status-item">
+          <span className="label">区块高度:</span>
+          <span className="value">{info.blockHeight}</span>
+        </div>
+        <div className="status-item">
+          <span className="label">待处理交易:</span>
+          <span className="value">{info.pendingTransactionCount}</span>
+        </div>
+        <div className="status-item">
+          <span className="label">用户总数:</span>
+          <span className="value">{info.totalUsers}</span>
+        </div>
+        <div className="status-item">
+          <span className="label">矿工总数:</span>
+          <span className="value">{info.totalMiners}</span>
+        </div>
+        <div className="status-item">
+          <span className="label">挖矿奖励:</span>
+          <span className="value">{info.config.blockReward} 代币</span>
+        </div>
+        <div className="status-item">
+          <span className="label">挖矿难度:</span>
+          <span className="value">{info.config.difficulty}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 用户管理组件
+const UserManagement: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [newUserName, setNewUserName] = useState('');
+  const [selectedUser, setSelectedUser] = useState<string>('');
+  const [allocateAmount, setAllocateAmount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const loadUsers = async () => {
+    try {
+      const response = await api.getUsers();
+      if (response.success && response.data) {
+        setUsers(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to load users:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const createUser = async () => {
+    if (!newUserName.trim()) {
+      setMessage('请输入用户名');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await api.createUser(newUserName.trim());
+      if (response.success) {
+        setMessage(`用户 ${newUserName} 创建成功！`);
+        setNewUserName('');
+        await loadUsers();
+        onRefresh();
+      } else {
+        setMessage(`创建失败: ${response.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      setMessage('创建用户时发生错误');
+    }
+    setLoading(false);
+  };
+
+  const allocateTokens = async () => {
+    if (!selectedUser || allocateAmount <= 0) {
+      setMessage('请选择用户并输入有效金额');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await api.allocateTokens(selectedUser, allocateAmount);
+      if (response.success) {
+        setMessage(`成功分配 ${allocateAmount} 代币！`);
+        setAllocateAmount(0);
+        await loadUsers();
+        onRefresh();
+      } else {
+        setMessage(`分配失败: ${response.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to allocate tokens:', error);
+      setMessage('分配代币时发生错误');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="management-panel">
+      <h2>👥 用户管理</h2>
+      
+      <div className="action-section">
+        <h3>创建新用户</h3>
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="用户名"
+            value={newUserName}
+            onChange={(e) => setNewUserName(e.target.value)}
+            disabled={loading}
+            onKeyPress={(e) => e.key === 'Enter' && createUser()}
+          />
+          <button onClick={createUser} disabled={loading || !newUserName.trim()}>
+            {loading ? '创建中...' : '创建用户'}
+          </button>
+        </div>
+      </div>
+
+      <div className="action-section">
+        <h3>分配代币</h3>
+        <div className="input-group">
+          <select
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            disabled={loading}
+          >
+            <option value="">选择用户</option>
+            {users.map(user => (
+              <option key={user.address} value={user.address}>
+                {user.name} - {user.address.substring(0, 10)}...
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            placeholder="代币数量"
+            value={allocateAmount || ''}
+            onChange={(e) => setAllocateAmount(Number(e.target.value))}
+            disabled={loading}
+            min="1"
+          />
+          <button onClick={allocateTokens} disabled={loading || !selectedUser || allocateAmount <= 0}>
+            {loading ? '分配中...' : '分配代币'}
+          </button>
+        </div>
+      </div>
+
+      <div className="list-section">
+        <h3>用户列表 ({users.length})</h3>
+        <button onClick={loadUsers} className="refresh-btn">刷新</button>
+        <div className="user-list">
+          {users.length === 0 ? (
+            <div className="empty-state">暂无用户，请先创建用户</div>
+          ) : (
+            users.map(user => (
+              <div key={user.address} className="user-item">
+                <div className="user-info">
+                  <strong>{user.name || '匿名用户'}</strong>
+                  <div className="user-details">
+                    <span>地址: {user.address}</span>
+                    <span>余额: {user.balance} 代币</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {message && (
+        <div className="message">
+          {message}
+          <button onClick={() => setMessage('')}>×</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 主应用组件
+function App() {
+  const [activeTab, setActiveTab] = useState('status');
+  const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');
+
+  const loadSystemInfo = async () => {
+    try {
+      setConnectionStatus('connecting');
+      const infoResponse = await api.getBlockchainInfo();
+      
+      if (infoResponse.success && infoResponse.data) {
+        setBlockchainInfo(infoResponse.data);
+      }
+
+      // 同时加载用户列表
+      const usersResponse = await api.getUsers();
+      if (usersResponse.success && usersResponse.data) {
+        setUsers(usersResponse.data);
+      }
+      
+      setConnectionStatus('connected');
+    } catch (error) {
+      console.error('Failed to load system info:', error);
+      setConnectionStatus('disconnected');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSystemInfo();
+    const interval = setInterval(loadSystemInfo, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleRefresh = () => {
+    loadSystemInfo();
+  };
+
+  const tabs = [
+    { id: 'status', label: '系统状态', icon: '📊' },
+    { id: 'users', label: '用户管理', icon: '👥' },
+    { id: 'transactions', label: '交易管理', icon: '💸' },
+    { id: 'miners', label: '矿工管理', icon: '⛏️' },
+    { id: 'blocks', label: '区块浏览器', icon: '🔍' }
+  ];
+
+  if (loading) {
+    return (
+      <div className="app loading">
+        <div className="loading-spinner">⚡</div>
+        <p>连接区块链系统中...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>🚀 区块链学习系统</h1>
+        <div className="header-actions">
+          <div className={`connection-status ${connectionStatus}`}>
+            <span className="status-indicator"></span>
+            {connectionStatus === 'connected' && '已连接'}
+            {connectionStatus === 'connecting' && '连接中...'}
+            {connectionStatus === 'disconnected' && '连接失败'}
+          </div>
+          <button onClick={handleRefresh} className="refresh-button">
+            🔄 刷新
+          </button>
+        </div>
+      </header>
+
+      <nav className="app-nav">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-label">{tab.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      <main className="app-main">
+        {activeTab === 'status' && (
+          <SystemStatus info={blockchainInfo} />
+        )}
+        {activeTab === 'users' && (
+          <UserManagement onRefresh={handleRefresh} />
+        )}
+        {activeTab === 'transactions' && (
+          <TransactionManagement users={users} onRefresh={handleRefresh} />
+        )}
+        {activeTab === 'miners' && (
+          <MinerManagement onRefresh={handleRefresh} />
+        )}
+        {activeTab === 'blocks' && (
+          <BlockchainBrowser />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>🎓 区块链学习系统 - 理解区块链的最佳实践平台</p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;

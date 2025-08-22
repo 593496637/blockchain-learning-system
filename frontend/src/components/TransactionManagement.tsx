@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
-import { User, Transaction } from '../types';
+import type { User, Transaction } from '../types';
 
 interface Props {
   users: User[];

@@ -48,7 +48,15 @@ export interface SystemConfig {
   maxTransactionsPerBlock: number;
 }
 
-export interface ApiResponse<T = any> {
+export interface BlockchainInfo {
+  blockHeight: number;
+  pendingTransactionCount: number;
+  totalUsers: number;
+  totalMiners: number;
+  config: SystemConfig;
+}
+
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;

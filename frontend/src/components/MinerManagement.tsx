@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
-import { Miner } from '../types';
+import type { Miner } from '../types';
 
 interface Props {
   onRefresh: () => void;
@@ -46,6 +46,7 @@ const MinerManagement: React.FC<Props> = ({ onRefresh }) => {
         setMessage(`注册失败: ${response.error}`);
       }
     } catch (error) {
+      console.error('Failed to register miner:', error);
       setMessage('注册矿工时发生错误');
     }
     setLoading(false);
@@ -68,6 +69,7 @@ const MinerManagement: React.FC<Props> = ({ onRefresh }) => {
         setMessage(`挖矿失败: ${response.error}`);
       }
     } catch (error) {
+      console.error('Failed to mine block:', error);
       setMessage('挖矿时发生错误');
     }
     setLoading(false);
