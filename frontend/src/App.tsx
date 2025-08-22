@@ -1,56 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import './components/BackgroundEffects.css';
 import { api } from './api';
 import type { User, BlockchainInfo } from './types';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // 导入功能组件
 import BlockchainBrowser from './components/BlockchainBrowser';
 import TransactionManagement from './components/TransactionManagement';
 import MinerManagement from './components/MinerManagement';
+import Sidebar from './components/Sidebar';
 
-// 系统状态组件
-const SystemStatus: React.FC<{ info: BlockchainInfo | null }> = ({ info }) => {
-  if (!info) {
-    return (
-      <div className="status-panel">
-        <h2>🔗 区块链系统状态</h2>
-        <div className="loading">加载中...</div>
-      </div>
-    );
-  }
+// 导入背景效果和图标
+import { ParticleBackground, BlockchainGrid, GradientOrb, NodeNetwork } from './components/BackgroundEffects';
+import { RefreshIcon, ConnectedIcon } from './components/Icons';
+import EnhancedSystemStatus from './components/EnhancedSystemStatus';
 
-  return (
-    <div className="status-panel">
-      <h2>🔗 区块链系统状态</h2>
-      <div className="status-grid">
-        <div className="status-item">
-          <span className="label">区块高度:</span>
-          <span className="value">{info.blockHeight}</span>
-        </div>
-        <div className="status-item">
-          <span className="label">待处理交易:</span>
-          <span className="value">{info.pendingTransactionCount}</span>
-        </div>
-        <div className="status-item">
-          <span className="label">用户总数:</span>
-          <span className="value">{info.totalUsers}</span>
-        </div>
-        <div className="status-item">
-          <span className="label">矿工总数:</span>
-          <span className="value">{info.totalMiners}</span>
-        </div>
-        <div className="status-item">
-          <span className="label">挖矿奖励:</span>
-          <span className="value">{info.config.blockReward} 代币</span>
-        </div>
-        <div className="status-item">
-          <span className="label">挖矿难度:</span>
-          <span className="value">{info.config.difficulty}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+
 
 // 用户管理组件
 const UserManagement: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {
@@ -126,7 +92,7 @@ const UserManagement: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {
 
   return (
     <div className="management-panel">
-      <h2>👥 用户管理</h2>
+      <h2>用户管理</h2>
       
       <div className="action-section">
         <h3>创建新用户</h3>
@@ -213,6 +179,7 @@ function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const loadSystemInfo = async () => {
     try {
@@ -248,75 +215,88 @@ function App() {
     loadSystemInfo();
   };
 
-  const tabs = [
-    { id: 'status', label: '系统状态', icon: '📊' },
-    { id: 'users', label: '用户管理', icon: '👥' },
-    { id: 'transactions', label: '交易管理', icon: '💸' },
-    { id: 'miners', label: '矿工管理', icon: '⛏️' },
-    { id: 'blocks', label: '区块浏览器', icon: '🔍' }
-  ];
+
 
   if (loading) {
     return (
-      <div className="app loading">
-        <div className="loading-spinner">⚡</div>
-        <p>连接区块链系统中...</p>
-      </div>
+      <ThemeProvider>
+        <div className="app loading">
+          <div className="loading-spinner">⚡</div>
+          <p>连接区块链系统中...</p>
+        </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>🚀 区块链学习系统</h1>
-        <div className="header-actions">
-          <div className={`connection-status ${connectionStatus}`}>
-            <span className="status-indicator"></span>
-            {connectionStatus === 'connected' && '已连接'}
-            {connectionStatus === 'connecting' && '连接中...'}
-            {connectionStatus === 'disconnected' && '连接失败'}
-          </div>
-          <button onClick={handleRefresh} className="refresh-button">
-            🔄 刷新
-          </button>
+    <ThemeProvider>
+      <div className="app">
+        {/* 背景效果 */}
+        <GradientOrb />
+        <BlockchainGrid />
+        <ParticleBackground />
+        <NodeNetwork />
+        
+        {/* 侧边栏导航 */}
+        <Sidebar 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+
+        {/* 主要内容区域 */}
+        <div className={`main-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+          {/* 顶部状态栏 */}
+          <header className="top-bar">
+            <div className="page-title">
+              {activeTab === 'status' && '系统状态'}
+              {activeTab === 'users' && '用户管理'}
+              {activeTab === 'transactions' && '交易管理'}
+              {activeTab === 'miners' && '矿工管理'}
+              {activeTab === 'blocks' && '区块浏览器'}
+            </div>
+            <div className="top-bar-actions">
+              <div className={`connection-status ${connectionStatus}`}>
+                <span className="status-indicator">
+                  {connectionStatus === 'connected' && <ConnectedIcon size={16} />}
+                  {connectionStatus === 'connecting' && <div className="loading-dot"></div>}
+                  {connectionStatus === 'disconnected' && <div className="error-dot"></div>}
+                </span>
+                <span className="status-text">
+                  {connectionStatus === 'connected' && '已连接'}
+                  {connectionStatus === 'connecting' && '连接中...'}
+                  {connectionStatus === 'disconnected' && '连接失败'}
+                </span>
+              </div>
+              <button onClick={handleRefresh} className="refresh-button">
+                <RefreshIcon size={18} className="refresh-icon" />
+                刷新
+              </button>
+            </div>
+          </header>
+
+          {/* 主内容区域 */}
+          <main className="main-content">
+            {activeTab === 'status' && (
+              <EnhancedSystemStatus info={blockchainInfo} />
+            )}
+            {activeTab === 'users' && (
+              <UserManagement onRefresh={handleRefresh} />
+            )}
+            {activeTab === 'transactions' && (
+              <TransactionManagement users={users} onRefresh={handleRefresh} />
+            )}
+            {activeTab === 'miners' && (
+              <MinerManagement onRefresh={handleRefresh} />
+            )}
+            {activeTab === 'blocks' && (
+              <BlockchainBrowser />
+            )}
+          </main>
         </div>
-      </header>
-
-      <nav className="app-nav">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-label">{tab.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      <main className="app-main">
-        {activeTab === 'status' && (
-          <SystemStatus info={blockchainInfo} />
-        )}
-        {activeTab === 'users' && (
-          <UserManagement onRefresh={handleRefresh} />
-        )}
-        {activeTab === 'transactions' && (
-          <TransactionManagement users={users} onRefresh={handleRefresh} />
-        )}
-        {activeTab === 'miners' && (
-          <MinerManagement onRefresh={handleRefresh} />
-        )}
-        {activeTab === 'blocks' && (
-          <BlockchainBrowser />
-        )}
-      </main>
-
-      <footer className="app-footer">
-        <p>🎓 区块链学习系统 - 理解区块链的最佳实践平台</p>
-      </footer>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 

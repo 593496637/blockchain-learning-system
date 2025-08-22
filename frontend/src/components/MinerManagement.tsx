@@ -79,7 +79,7 @@ const MinerManagement: React.FC<Props> = ({ onRefresh }) => {
 
   return (
     <div className="management-panel">
-      <h2>⛏️ 矿工管理</h2>
+      <h2>矿工管理</h2>
       
       {/* 注册矿工 */}
       <div className="action-section">

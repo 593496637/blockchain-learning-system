@@ -1,0 +1,253 @@
+/* 背景效果样式 */
+
+/* 粒子背景 */
+.particle-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+  opacity: 0.6;
+  animation: float 20s infinite linear;
+}
+
+.particle-1 {
+  width: 4px;
+  height: 4px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 25s;
+}
+
+.particle-2 {
+  width: 6px;
+  height: 6px;
+  top: 60%;
+  left: 80%;
+  animation-delay: -5s;
+  animation-duration: 30s;
+}
+
+.particle-3 {
+  width: 3px;
+  height: 3px;
+  top: 40%;
+  left: 60%;
+  animation-delay: -10s;
+  animation-duration: 20s;
+}
+
+.particle-4 {
+  width: 5px;
+  height: 5px;
+  top: 80%;
+  left: 20%;
+  animation-delay: -15s;
+  animation-duration: 35s;
+}
+
+.particle-5 {
+  width: 4px;
+  height: 4px;
+  top: 10%;
+  left: 70%;
+  animation-delay: -20s;
+  animation-duration: 28s;
+}
+
+.particle-6 {
+  width: 7px;
+  height: 7px;
+  top: 70%;
+  left: 40%;
+  animation-delay: -25s;
+  animation-duration: 22s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) translateX(-15px) rotate(180deg);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px) rotate(270deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0px) translateX(0px) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+/* 区块链网格背景 */
+.blockchain-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -2;
+  opacity: 0.5;
+}
+
+.grid-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 动态渐变球 */
+.gradient-orb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -3;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: orbFloat 20s infinite ease-in-out;
+}
+
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+  top: -150px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
+  top: 50%;
+  right: -100px;
+  animation-delay: -7s;
+}
+
+.orb-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+  bottom: -125px;
+  left: 30%;
+  animation-delay: -14s;
+}
+
+@keyframes orbFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(50px, -30px) scale(1.1);
+  }
+  50% {
+    transform: translate(-30px, 50px) scale(0.9);
+  }
+  75% {
+    transform: translate(30px, -50px) scale(1.05);
+  }
+}
+
+/* 节点网络 */
+.node-network {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.network-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.network-node {
+  filter: drop-shadow(0 0 6px var(--color-primary));
+}
+
+.network-line {
+  filter: drop-shadow(0 0 2px var(--color-primary));
+}
+
+/* 主题适配 */
+.theme-dark .particle {
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+}
+
+.theme-dark .blockchain-grid {
+  opacity: 0.3;
+}
+
+.theme-dark .gradient-orb {
+  opacity: 0.8;
+}
+
+.theme-dark .node-network {
+  opacity: 0.6;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .particle-background {
+    display: none; /* 移动端隐藏粒子效果以提升性能 */
+  }
+  
+  .gradient-orb .orb {
+    filter: blur(20px); /* 减少模糊效果 */
+  }
+  
+  .orb-1 {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .orb-2 {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .orb-3 {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle,
+  .orb,
+  .network-node,
+  .network-line {
+    animation: none !important;
+  }
+}
