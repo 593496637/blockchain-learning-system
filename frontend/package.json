@@ -1,13 +1,15 @@
 {
-  "name": "frontend",
+  "name": "blockchain-learning-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "区块链学习系统前端应用",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^19.1.1",
@@ -25,5 +27,14 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
-  }
+  },
+  "keywords": [
+    "blockchain",
+    "learning",
+    "react",
+    "typescript",
+    "education"
+  ],
+  "author": "Blockchain Learning System",
+  "license": "MIT"
 }

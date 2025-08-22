@@ -1,69 +1,159 @@
-# React + TypeScript + Vite
+# 区块链学习系统 - 前端
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是一个用于学习区块链技术的交互式前端应用。
 
-Currently, two official plugins are available:
+## 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📊 **系统状态监控**: 实时查看区块链系统的运行状态
+- 👥 **用户管理**: 创建用户、查看用户信息、分配代币
+- 💸 **交易管理**: 创建交易、查看交易池状态
+- ⛏️ **矿工管理**: 注册矿工、执行挖矿操作
+- 🔍 **区块链浏览器**: 查看区块链、区块详情和交易记录
 
-## Expanding the ESLint configuration
+## 技术栈
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **框架**: React 19 + TypeScript
+- **构建工具**: Vite
+- **样式**: 原生CSS（无第三方UI库）
+- **状态管理**: React Hooks
+- **HTTP客户端**: Fetch API
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 快速开始
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### 前置要求
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 18+
+- pnpm（推荐）或 npm
+
+### 安装依赖
+
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 开发模式
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev
 ```
+
+应用将在 http://localhost:3000 启动
+
+### 构建生产版本
+
+```bash
+pnpm build
+```
+
+### 预览生产版本
+
+```bash
+pnpm preview
+```
+
+## 项目结构
+
+```
+src/
+├── api.ts          # API接口封装
+├── types.ts        # TypeScript类型定义
+├── App.tsx         # 主应用组件
+├── App.css         # 应用样式
+├── main.tsx        # 应用入口
+└── index.css       # 全局样式
+```
+
+## API接口
+
+前端通过以下API与后端进行交互：
+
+### 用户管理
+- `POST /api/users` - 创建用户
+- `GET /api/users` - 获取用户列表
+- `GET /api/users/:address` - 获取单个用户信息
+- `POST /api/tokens/allocate` - 分配代币
+
+### 交易管理
+- `POST /api/transactions` - 创建交易
+- `GET /api/transactions/pending` - 获取待处理交易
+
+### 矿工管理
+- `POST /api/miners` - 注册矿工
+- `GET /api/miners` - 获取矿工列表
+- `POST /api/mining/mine` - 执行挖矿
+
+### 区块链浏览
+- `GET /api/blockchain/info` - 获取区块链信息
+- `GET /api/blockchain/blocks` - 获取所有区块
+- `GET /api/blockchain/blocks/:index` - 获取指定区块
+
+## 开发说明
+
+### 代理配置
+
+开发环境下，Vite配置了API代理，将 `/api/*` 请求转发到 `http://localhost:3001`
+
+### 响应式设计
+
+应用采用响应式设计，支持桌面端和移动端访问。
+
+### 错误处理
+
+- 网络错误自动重试
+- 用户友好的错误提示
+- 连接状态指示器
+
+### 实时更新
+
+- 系统状态每10秒自动刷新
+- 手动刷新按钮
+- 操作完成后自动更新相关数据
+
+## 使用指南
+
+### 1. 系统状态
+查看区块链的基本信息，包括区块高度、用户数量、矿工数量等。
+
+### 2. 用户管理
+- 创建新用户账户
+- 为用户分配初始代币
+- 查看用户余额和交易历史
+
+### 3. 交易管理
+- 在用户之间创建转账交易
+- 查看交易池中的待处理交易
+- 监控交易状态变化
+
+### 4. 矿工管理
+- 注册新的矿工
+- 执行挖矿操作处理交易
+- 查看矿工统计信息
+
+### 5. 区块链浏览器
+- 查看完整的区块链
+- 点击区块查看详细信息
+- 查看区块中包含的所有交易
+
+## 故障排除
+
+### 连接问题
+1. 确保后端服务正在运行（端口3001）
+2. 检查网络连接
+3. 查看浏览器控制台的错误信息
+
+### 数据不更新
+1. 点击刷新按钮手动更新
+2. 检查后端API是否正常响应
+3. 清除浏览器缓存
+
+## 贡献指南
+
+1. Fork 项目
+2. 创建功能分支
+3. 提交更改
+4. 推送到分支
+5. 创建 Pull Request
+
+## 许可证
+
+MIT License
