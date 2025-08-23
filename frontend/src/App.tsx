@@ -5,19 +5,14 @@ import { api } from './api';
 import type { User, BlockchainInfo } from './types';
 import { ThemeProvider } from './components/ThemeProvider';
 
-// 导入功能组件
 import BlockchainBrowser from './components/BlockchainBrowser';
 import TransactionManagement from './components/TransactionManagement';
 import MinerManagement from './components/MinerManagement';
 import UserManagement from './components/UserManagement';
 import Sidebar from './components/Sidebar';
-
-// 导入背景效果和图标
 import { ParticleBackground, BlockchainGrid, GradientOrb, NodeNetwork } from './components/BackgroundEffects';
 import { RefreshIcon, ConnectedIcon } from './components/Icons';
 import EnhancedSystemStatus from './components/EnhancedSystemStatus';
-
-// 主应用组件
 function App() {
   const [activeTab, setActiveTab] = useState('status');
   const [blockchainInfo, setBlockchainInfo] = useState<BlockchainInfo | null>(null);
@@ -29,13 +24,27 @@ function App() {
   const loadSystemInfo = async () => {
     try {
       setConnectionStatus('connecting');
+      
+      // 先进行健康检查
+      try {
+        const response = await fetch('http://localhost:3001/api/health');
+        const healthData = await response.json();
+        if (!healthData.success) {
+          throw new Error('Health check failed');
+        }
+      } catch (healthError) {
+        console.error('Health check failed:', healthError);
+        setConnectionStatus('disconnected');
+        setLoading(false);
+        return;
+      }
+      
       const infoResponse = await api.getBlockchainInfo();
       
       if (infoResponse.success && infoResponse.data) {
         setBlockchainInfo(infoResponse.data);
       }
 
-      // 同时加载用户列表
       const usersResponse = await api.getUsers();
       if (usersResponse.success && usersResponse.data) {
         setUsers(usersResponse.data);
@@ -74,13 +83,10 @@ function App() {
   return (
     <ThemeProvider>
       <div className="app">
-        {/* 背景效果 */}
         <GradientOrb />
         <BlockchainGrid />
         <ParticleBackground />
         <NodeNetwork />
-        
-        {/* 侧边栏导航 */}
         <Sidebar 
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -88,9 +94,7 @@ function App() {
           setCollapsed={setSidebarCollapsed}
         />
 
-        {/* 主要内容区域 */}
         <div className={`main-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-          {/* 顶部状态栏 */}
           <header className="top-bar">
             <div className="page-title">
               {activeTab === 'status' && '系统状态'}
@@ -119,7 +123,6 @@ function App() {
             </div>
           </header>
 
-          {/* 主内容区域 */}
           <main className="main-content">
             {activeTab === 'status' && (
               <EnhancedSystemStatus info={blockchainInfo} />

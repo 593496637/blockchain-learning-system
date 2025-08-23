@@ -25,6 +25,18 @@ const BlockchainBrowser: React.FC = () => {
     setLoading(false);
   };
 
+  const loadBlockDetail = async (index: number) => {
+    try {
+      const response = await api.getBlock(index);
+      if (response.success && response.data) {
+        setSelectedBlock(response.data);
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Failed to load block detail:', error);
+    }
+  };
+
   useEffect(() => {
     loadBlocks();
   }, []);
@@ -56,10 +68,11 @@ const BlockchainBrowser: React.FC = () => {
         case 'noTransactions':
           filtered = filtered.filter(block => block.transactions.length === 0);
           break;
-        case 'recent':
+        case 'recent': {
           const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
           filtered = filtered.filter(block => block.timestamp > oneDayAgo);
           break;
+        }
       }
     }
 
@@ -89,8 +102,8 @@ const BlockchainBrowser: React.FC = () => {
   }, [blocks]);
 
   const handleBlockSelect = (block: Block) => {
-    setSelectedBlock(block);
-    setShowModal(true);
+    // 使用API获取完整的区块详情
+    loadBlockDetail(block.index);
   };
 
   const closeModal = () => {

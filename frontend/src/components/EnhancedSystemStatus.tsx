@@ -10,7 +10,7 @@ const AnimatedNumber: React.FC<{ value: number; duration?: number }> = ({ value,
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    let startTime = Date.now();
+    const startTime = Date.now();
     const startValue = displayValue;
     const endValue = value;
     

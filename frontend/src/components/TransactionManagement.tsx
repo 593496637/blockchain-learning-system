@@ -5,7 +5,6 @@ import {
   SendIcon, 
   ArrowRightIcon, 
   PendingIcon, 
-  SuccessIcon, 
   CoinIcon,
   RefreshIcon,
   UserAvatar
@@ -77,69 +76,89 @@ const TransactionManagement: React.FC<Props> = ({ users, onRefresh }) => {
   };
 
   return (
-    <div className="management-panel simple">
-      {/* 简化的标题 */}
-      <div className="simple-header">
-        <div className="header-icon">
-          <SendIcon size={24} />
-        </div>
-        <div>
-          <h2>交易管理</h2>
-          <p>创建和管理区块链交易</p>
+    <div className="management-panel">
+      {/* 标题 */}
+      <div className="panel-header">
+        <div className="header-content">
+          <div className="header-icon">
+            <SendIcon size={24} className="icon-gradient" />
+          </div>
+          <div className="header-text">
+            <h2>交易管理</h2>
+            <p className="header-subtitle">创建和管理区块链交易</p>
+          </div>
         </div>
       </div>
       
-      {/* 简化的创建交易表单 */}
-      <div className="simple-form">
-        <h3>
+      {/* 创建交易表单 */}
+      <div className="action-section">
+        <div className="section-header">
           <CoinIcon size={20} />
-          创建新交易
-        </h3>
+          <h3>创建新交易</h3>
+        </div>
         
-        <div className="form-layout">
-          {/* 发送方 */}
-          <div className="form-field">
-            <label>发送方</label>
-            <select
-              value={fromAddress}
-              onChange={(e) => setFromAddress(e.target.value)}
-              disabled={loading}
-            >
-              <option value="">选择发送方钱包</option>
-              {usersWithBalance.map(user => (
-                <option key={user.address} value={user.address}>
-                  {user.name} (余额: {user.balance} 代币)
-                </option>
-              ))}
-            </select>
+        <div className="transaction-form" style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+          <div className="form-row" style={{display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'end'}}>
+            {/* 发送方 */}
+            <div className="form-group">
+              <label style={{fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-text-secondary)', marginBottom: '0.5rem', display: 'block'}}>发送方</label>
+              <select
+                value={fromAddress}
+                onChange={(e) => setFromAddress(e.target.value)}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text-primary)'
+                }}
+              >
+                <option value="">选择发送方钱包</option>
+                {usersWithBalance.map(user => (
+                  <option key={user.address} value={user.address}>
+                    {user.name} (余额: {user.balance} 代币)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 箭头 */}
+            <div style={{display: 'flex', justifyContent: 'center', padding: '0.75rem'}}>
+              <ArrowRightIcon size={20} color="var(--color-primary)" />
+            </div>
+
+            {/* 接收方 */}
+            <div className="form-group">
+              <label style={{fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-text-secondary)', marginBottom: '0.5rem', display: 'block'}}>接收方</label>
+              <select
+                value={toAddress}
+                onChange={(e) => setToAddress(e.target.value)}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text-primary)'
+                }}
+              >
+                <option value="">选择接收方钱包</option>
+                {receiveUsers.map(user => (
+                  <option key={user.address} value={user.address}>
+                    {user.name} - {user.address.substring(0, 10)}...
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* 箭头 */}
-          <div className="simple-arrow">
-            <ArrowRightIcon size={24} />
-          </div>
-
-          {/* 接收方 */}
-          <div className="form-field">
-            <label>接收方</label>
-            <select
-              value={toAddress}
-              onChange={(e) => setToAddress(e.target.value)}
-              disabled={loading}
-            >
-              <option value="">选择接收方钱包</option>
-              {receiveUsers.map(user => (
-                <option key={user.address} value={user.address}>
-                  {user.name} - {user.address.substring(0, 10)}...
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 金额输入 */}
-          <div className="form-field">
-            <label>转账金额</label>
-            <div className="amount-input">
+          {/* 金额和按钮 */}
+          <div className="form-row" style={{display: 'flex', gap: '1rem', alignItems: 'flex-end'}}>
+            <div className="form-group" style={{flex: 1}}>
+              <label style={{fontSize: '0.9rem', fontWeight: '600', color: 'var(--color-text-secondary)', marginBottom: '0.5rem', display: 'block'}}>转账金额</label>
               <input
                 type="number"
                 placeholder="输入金额"
@@ -147,29 +166,51 @@ const TransactionManagement: React.FC<Props> = ({ users, onRefresh }) => {
                 onChange={(e) => setAmount(Number(e.target.value))}
                 disabled={loading}
                 min="1"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text-primary)'
+                }}
               />
-              <span className="currency">代币</span>
+              {fromAddress && amount > 0 && (getUserByAddress(fromAddress)?.balance || 0) < amount && (
+                <span style={{fontSize: '0.8rem', color: 'var(--color-error)', marginTop: '0.25rem', display: 'block'}}>
+                  余额不足 (可用: {getUserByAddress(fromAddress)?.balance || 0} 代币)
+                </span>
+              )}
             </div>
+            
+            <button 
+              onClick={createTransaction} 
+              disabled={loading || !fromAddress || !toAddress || amount <= 0 || (fromAddress ? (getUserByAddress(fromAddress)?.balance || 0) < amount : false)}
+              className="input-group button"
+              style={{
+                minWidth: '120px',
+                height: '48px'
+              }}
+            >
+              {loading ? '创建中...' : '创建交易'}
+            </button>
           </div>
-
-          {/* 提交按钮 */}
-          <button 
-            onClick={createTransaction} 
-            disabled={loading || !fromAddress || !toAddress || amount <= 0}
-            className="submit-btn"
-          >
-            {loading ? '创建中...' : '创建交易'}
-          </button>
         </div>
+        
+        {/* 错误提示 */}
+        {fromAddress === toAddress && fromAddress && (
+          <div className="message warning" style={{marginTop: '1rem'}}>
+            <span>发送方和接收方不能相同</span>
+          </div>
+        )}
       </div>
 
-      {/* 简化的交易池 */}
-      <div className="simple-list">
-        <div className="list-header">
-          <h3>
+      {/* 交易池 */}
+      <div className="list-section">
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
             <PendingIcon size={20} />
-            交易池 ({transactions.length})
-          </h3>
+            <h3 style={{margin: 0, fontSize: '1.25rem', fontWeight: '600'}}>交易池 ({transactions.length})</h3>
+          </div>
           <button onClick={loadTransactions} className="refresh-btn">
             <RefreshIcon size={16} />
             刷新
@@ -185,38 +226,74 @@ const TransactionManagement: React.FC<Props> = ({ users, onRefresh }) => {
           ) : (
             transactions.map(tx => (
               <div key={tx.id} className="transaction-item">
-                <div className="tx-header">
-                  <span className="tx-id">#{tx.id.substring(0, 8)}</span>
-                  <span className={`tx-status ${tx.status}`}>
-                    {tx.status === 'pending' ? (
-                      <>
-                        <PendingIcon size={14} />
-                        待处理
-                      </>
-                    ) : (
-                      <>
-                        <SuccessIcon size={14} />
-                        已确认
-                      </>
-                    )}
-                  </span>
-                </div>
-                
-                <div className="tx-flow">
-                  <div className="tx-user">
-                    <UserAvatar username={getUserByAddress(tx.from)?.name || 'Unknown'} size={20} />
-                    <span>{getUserByAddress(tx.from)?.name || 'Unknown'}</span>
+                <div className="transaction-info">
+                  <div className="transaction-header">
+                    <div>
+                      <strong>交易 #{tx.id.substring(0, 8)}</strong>
+                      <span style={{
+                        marginLeft: '0.5rem',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        backgroundColor: tx.status === 'pending' ? 'rgba(251, 191, 36, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                        color: tx.status === 'pending' ? 'var(--color-warning)' : 'var(--color-success)'
+                      }}>
+                        {tx.status === 'pending' ? '待处理' : '已确认'}
+                      </span>
+                    </div>
+                    <span className="amount" style={{color: 'var(--color-success)', fontWeight: '700'}}>
+                      {tx.amount} 代币
+                    </span>
                   </div>
-                  <ArrowRightIcon size={16} />
-                  <div className="tx-user">
-                    <UserAvatar username={getUserByAddress(tx.to)?.name || 'Unknown'} size={20} />
-                    <span>{getUserByAddress(tx.to)?.name || 'Unknown'}</span>
+                  
+                  <div className="transaction-details" style={{marginTop: '0.5rem', fontSize: '0.9rem'}}>
+                    <div style={{marginBottom: '0.25rem', display: 'flex', alignItems: 'center'}}>
+                      <UserAvatar username={getUserByAddress(tx.from)?.name || 'Unknown'} size={16} />
+                      <strong style={{marginLeft: '0.25rem'}}>{getUserByAddress(tx.from)?.name || 'Unknown'}</strong>
+                      <div style={{margin: '0 0.5rem'}}>
+                        <ArrowRightIcon size={14} color="var(--color-primary)" />
+                      </div>
+                      <UserAvatar username={getUserByAddress(tx.to)?.name || 'Unknown'} size={16} />
+                      <strong style={{marginLeft: '0.25rem'}}>{getUserByAddress(tx.to)?.name || 'Unknown'}</strong>
+                    </div>
+                    
+                    <div style={{fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem'}}>
+                      <div style={{marginBottom: '0.25rem'}}>
+                        <strong>发送方钱包地址 (From Address):</strong>
+                      </div>
+                      <div style={{
+                        fontFamily: 'Monaco, monospace', 
+                        fontSize: '0.7rem', 
+                        wordBreak: 'break-all',
+                        padding: '0.25rem',
+                        backgroundColor: 'var(--color-background)',
+                        borderRadius: '4px',
+                        marginBottom: '0.5rem'
+                      }}>
+                        {tx.from}
+                      </div>
+                      
+                      <div style={{marginBottom: '0.25rem'}}>
+                        <strong>接收方钱包地址 (To Address):</strong>
+                      </div>
+                      <div style={{
+                        fontFamily: 'Monaco, monospace', 
+                        fontSize: '0.7rem', 
+                        wordBreak: 'break-all',
+                        padding: '0.25rem',
+                        backgroundColor: 'var(--color-background)',
+                        borderRadius: '4px',
+                        marginBottom: '0.5rem'
+                      }}>
+                        {tx.to}
+                      </div>
+                      
+                      <div>
+                        <strong>手续费 (Transaction Fee):</strong> {tx.fee} 代币
+                      </div>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="tx-amounts">
-                  <span className="amount">{tx.amount} 代币</span>
-                  <span className="fee">手续费: {tx.fee}</span>
                 </div>
               </div>
             ))
@@ -224,7 +301,7 @@ const TransactionManagement: React.FC<Props> = ({ users, onRefresh }) => {
         </div>
       </div>
 
-      {/* 简化的消息提示 */}
+      {/* 消息提示 */}
       {message && (
         <div className={`message ${message.includes('成功') ? 'success' : 'error'}`}>
           <span>{message}</span>

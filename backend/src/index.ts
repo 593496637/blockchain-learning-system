@@ -21,16 +21,7 @@ app.use((req, res, next) => {
   next();
 });
 
-/**
- * API路由定义
- */
-
-// 1. 用户管理相关接口
-
-/**
- * 创建新用户
- * POST /api/users
- */
+// 用户管理接口
 app.post('/api/users', (req, res) => {
   try {
     const { name } = req.body;
@@ -52,10 +43,6 @@ app.post('/api/users', (req, res) => {
   }
 });
 
-/**
- * 获取所有用户列表
- * GET /api/users
- */
 app.get('/api/users', (req, res) => {
   try {
     const users = blockchain.getUsers();
@@ -75,10 +62,6 @@ app.get('/api/users', (req, res) => {
   }
 });
 
-/**
- * 查询单个用户信息
- * GET /api/users/:address
- */
 app.get('/api/users/:address', (req, res) => {
   try {
     const { address } = req.params;
@@ -91,7 +74,6 @@ app.get('/api/users/:address', (req, res) => {
       });
     }
 
-    // 获取用户交易历史
     const transactions = blockchain.getUserTransactionHistory(address);
     
     const response: ApiResponse = {
@@ -111,12 +93,7 @@ app.get('/api/users/:address', (req, res) => {
   }
 });
 
-// 2. 代币管理相关接口
-
-/**
- * 手动分配代币 (管理员功能)
- * POST /api/tokens/allocate
- */
+// 代币管理接口
 app.post('/api/tokens/allocate', (req, res) => {
   try {
     const { userAddress, amount } = req.body;
@@ -149,12 +126,7 @@ app.post('/api/tokens/allocate', (req, res) => {
   }
 });
 
-// 3. 交易相关接口
-
-/**
- * 创建新交易
- * POST /api/transactions
- */
+// 交易管理接口
 app.post('/api/transactions', (req, res) => {
   try {
     const { from, to, amount } = req.body;
@@ -188,10 +160,6 @@ app.post('/api/transactions', (req, res) => {
   }
 });
 
-/**
- * 获取交易池中的待处理交易
- * GET /api/transactions/pending
- */
 app.get('/api/transactions/pending', (req, res) => {
   try {
     const pendingTransactions = blockchain.getPendingTransactions();
@@ -209,12 +177,7 @@ app.get('/api/transactions/pending', (req, res) => {
   }
 });
 
-// 4. 矿工相关接口
-
-/**
- * 注册新矿工
- * POST /api/miners
- */
+// 矿工管理接口
 app.post('/api/miners', (req, res) => {
   try {
     const { name } = req.body;
@@ -241,10 +204,6 @@ app.post('/api/miners', (req, res) => {
   }
 });
 
-/**
- * 获取所有矿工列表
- * GET /api/miners
- */
 app.get('/api/miners', (req, res) => {
   try {
     const miners = blockchain.getMiners();
@@ -261,10 +220,6 @@ app.get('/api/miners', (req, res) => {
   }
 });
 
-/**
- * 矿工挖矿
- * POST /api/mining/mine
- */
 app.post('/api/mining/mine', (req, res) => {
   try {
     const { minerAddress } = req.body;
@@ -298,12 +253,7 @@ app.post('/api/mining/mine', (req, res) => {
   }
 });
 
-// 5. 区块链浏览器相关接口
-
-/**
- * 获取区块链信息
- * GET /api/blockchain/info
- */
+// 区块链浏览器接口
 app.get('/api/blockchain/info', (req, res) => {
   try {
     const chain = blockchain.getChain();
@@ -330,10 +280,6 @@ app.get('/api/blockchain/info', (req, res) => {
   }
 });
 
-/**
- * 获取完整区块链
- * GET /api/blockchain/blocks
- */
 app.get('/api/blockchain/blocks', (req, res) => {
   try {
     const chain = blockchain.getChain();
@@ -350,10 +296,6 @@ app.get('/api/blockchain/blocks', (req, res) => {
   }
 });
 
-/**
- * 获取指定区块信息
- * GET /api/blockchain/blocks/:index
- */
 app.get('/api/blockchain/blocks/:index', (req, res) => {
   try {
     const { index } = req.params;
@@ -381,10 +323,6 @@ app.get('/api/blockchain/blocks/:index', (req, res) => {
   }
 });
 
-/**
- * 健康检查接口
- * GET /api/health
- */
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -393,9 +331,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-/**
- * 启动服务器
- */
 app.listen(PORT, () => {
   console.log('🚀 区块链学习系统启动成功！');
   console.log(`📡 后端服务运行在: http://localhost:${PORT}`);

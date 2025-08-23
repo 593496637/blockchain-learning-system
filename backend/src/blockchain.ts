@@ -46,7 +46,6 @@ export class Blockchain {
     genesisBlock.hash = this.calculateHash(genesisBlock);
     this.chain.push(genesisBlock);
 
-    console.log('创世块已创建:', genesisBlock);
   }
 
   /**
@@ -82,8 +81,6 @@ export class Blockchain {
     };
 
     this.users.set(address, user);
-    console.log(`新用户创建: ${user.name} (${address})`);
-    
     return user;
   }
 
@@ -98,7 +95,6 @@ export class Blockchain {
     }
 
     user.balance += amount;
-    console.log(`向 ${user.name} 分配 ${amount} 代币，当前余额: ${user.balance}`);
     return true;
   }
 
@@ -135,9 +131,7 @@ export class Blockchain {
       status: 'pending'
     };
 
-    // 添加到交易池
     this.pendingTransactions.push(transaction);
-    console.log(`交易已创建并加入交易池: ${transaction.id}`);
     
     return transaction.id;
   }
@@ -165,8 +159,6 @@ export class Blockchain {
       name: `Miner_${name}`
     };
     this.users.set(address, minerUser);
-
-    console.log(`矿工已注册: ${name} (${address})`);
     return address;
   }
 
@@ -185,7 +177,6 @@ export class Blockchain {
       .slice(0, this.config.maxTransactionsPerBlock);
 
     if (transactionsToMine.length === 0) {
-      console.log('交易池为空，无法挖矿');
       return null;
     }
 
@@ -198,7 +189,6 @@ export class Blockchain {
     }
 
     if (validTransactions.length === 0) {
-      console.log('没有有效交易可以打包');
       return null;
     }
 
@@ -214,13 +204,10 @@ export class Blockchain {
       reward: this.config.blockReward
     };
 
-    // 执行挖矿 (寻找满足难度的哈希)
-    console.log(`${miner.name} 开始挖矿...`);
     const startTime = Date.now();
     
     while (true) {
       newBlock.hash = this.calculateHash(newBlock);
-      
       // 检查是否满足难度要求 (前缀有足够的0)
       if (newBlock.hash.substring(0, this.config.difficulty) === 
           '0'.repeat(this.config.difficulty)) {
@@ -231,7 +218,6 @@ export class Blockchain {
     }
 
     const miningTime = Date.now() - startTime;
-    console.log(`挖矿成功！耗时: ${miningTime}ms, Nonce: ${newBlock.nonce}`);
 
     // 添加区块到链上
     this.chain.push(newBlock);
@@ -288,7 +274,6 @@ export class Blockchain {
     miner.blocksMinedCount++;
     miner.totalRewards += totalReward;
 
-    console.log(`矿工 ${miner.name} 获得奖励: ${totalReward} (区块奖励: ${blockReward}, 手续费: ${totalFees})`);
   }
 
   /**

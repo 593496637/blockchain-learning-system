@@ -1,7 +1,5 @@
-// frontend/src/types.ts
-
 /**
- * 前端类型定义 - 与后端保持一致
+ * 类型定义
  */
 
 export interface User {
